@@ -16,11 +16,11 @@ The network server https://github.com/commandus/lorawan-network-server has a dev
 the -x option
 
 Other dev-payload options: 
- -i, --identity= identity JSON file
- -e, --eui= end-device identifier
- -E, --devicename= end-device name
- -a, --address=IP:port Send packet to network server. default port 5000
- -j --json-only Suppress header (JSON only)
+ + -i, --identity= identity JSON file
+ + -e, --eui= end-device identifier
+ + -E, --devicename= end-device name
+ + -a, --address=IP:port Send packet to network server. default port 5000
+ + -j --json-only Suppress header (JSON only)
 
 needed to identify the LoRA device in the LoRaWAN network.
 The program you are developing must generate packets as hexadecimal strings to pass dev-payload.
