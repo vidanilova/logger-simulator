@@ -42,15 +42,24 @@ logger-simulate –type base -time  2012-03-02T04:07:34 –kosa 38 –year 19 -v
 ---
 
 ### Использованы программы:
-1.	Windows 10 
-2.	Microsoft Visual Studio 2022 
-3.	Git Bash 
-4.	CMake 
-5.	Visual Studio Code
-6.	GitHub 
-8.	FAR Manager 
+1.	Microsoft Visual Studio 2022 
+2.	Git Bash 
+3.	CMake 
+4.	Visual Studio Code
+5.	GitHub 
+6.	FAR Manager 
 
-
+---
+### Параметры 
++ kosa 
++ kosayear
++ t 
++ vbat 
++ vcc
++ time 
++ measure
++ verbosity
+    
 ### Как его сделать
 ### Пункт 1
 
