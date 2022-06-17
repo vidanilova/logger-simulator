@@ -18,7 +18,7 @@ the -x option
 Other dev-payload options: 
  -i, --identity= identity JSON file
  -e, --eui= end-device identifier
- -E, --devicename= end-device name.
+ -E, --devicename= end-device name
  -a, --address=IP:port Send packet to network server. default port 5000
  -j --json-only Suppress header (JSON only)
 
