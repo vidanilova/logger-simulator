@@ -1,6 +1,49 @@
-# Logger simulator
+﻿# Logger simulator
  
-## Section 1
+##Description of the object
+
+The logger passes the measurement time time, the serial number of the spit kosa (unique within a year), 
+the year it was manufactured kosa_year (since 2000), and the temperature in degrees Celsius temperature in an array. 
+The array size is 1..28. Accuracy up to 4 decimal places after the floating point.
+The thermometer bus voltages vcc and the battery voltage vbat are also transmitted.
+The LoggerBuilder class in the build() methods creates one or more binary packages.
+The LoggerBuilder class and other functions needed for it are in the liblogger-huffman.a 
+or logger-huffman.lib library for Windows in the https://github.com/commandus/logger-huffman project
+The maximum length of one binary packet is 24 bytes to be sent in the LoRaWAN network.
+
+###What do you need
+The network server https://github.com/commandus/lorawan-network-server has a dev-payload utility that will need to pass received packets in
+the -x option
+
+Other dev-payload options:
+-i, --identity= identity JSON file
+-e, --eui= end-device identifier
+-E, --devicename= end-device name.
+-a, --address=IP:port Send packet to network server. default port 5000
+-j --json-only Suppress header (JSON only)
+
+needed to identify the LoRA device in the LoRaWAN network.
+The program you are developing must generate packets as hexadecimal strings to pass dev-payload.
+For testing, you can use the logger-huffman-print utility that comes with the library, 
+which prints the contents of a series of packets to the screen.
+
+####Program Requirements
+A command line utility to emulate data from a temperature logger must read temperature values ​​in dotted (or semicolon) decimal form 
+(for example, 36.6) from a file, input device, or command line options. The user must specify the serial number, 
+year of manufacture of the scythe in a file or in command line options. The time must be current.
+More or less like this:
+logger-simulate -type base -kosa 38 -year 19 -vcc 4.6 -vbat 1.5 2.3456 -3.1234 -5 6.1
+The result is a series of hexadecimal strings to stdout of the following form (each packet on a new line):
+4801ab1232432456463573645
+4adaf1223234324
+
+There are three types of packages (base, diff, huffman).
+
+To parse command line options, you can use the argtable3 library, there are two files in total.
+
+---
+
+#### Section 1
 
 _First, we install Git Bash to emulate command line work from the official website https://git-scm.com/downloads.
 We select the version that suits the parameters of your PC. In my case, installed the 64-bit version._
@@ -49,7 +92,7 @@ more codes for input  after that we will return back to Virtual Studio and right
 
 ---
 
-### Section 2
+##### Section 2
 
 So, for starters, 
 we download an additional program from the official website https://www.farmanager.com/download.php?l=ru. 
