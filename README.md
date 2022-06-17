@@ -1,6 +1,6 @@
 ﻿# Logger simulator
  
-##Description of the object
+## Description of the object
 
 The logger passes the measurement time time, the serial number of the spit kosa (unique within a year), 
 the year it was manufactured kosa_year (since 2000), and the temperature in degrees Celsius temperature in an array. 
@@ -11,7 +11,7 @@ The LoggerBuilder class and other functions needed for it are in the liblogger-h
 or logger-huffman.lib library for Windows in the https://github.com/commandus/logger-huffman project
 The maximum length of one binary packet is 24 bytes to be sent in the LoRaWAN network.
 
-###What do you need
+### What do you need
 The network server https://github.com/commandus/lorawan-network-server has a dev-payload utility that will need to pass received packets in
 the -x option
 
@@ -27,7 +27,7 @@ The program you are developing must generate packets as hexadecimal strings to p
 For testing, you can use the logger-huffman-print utility that comes with the library, 
 which prints the contents of a series of packets to the screen.
 
-####Program Requirements
+#### Program Requirements
 A command line utility to emulate data from a temperature logger must read temperature values ​​in dotted (or semicolon) decimal form 
 (for example, 36.6) from a file, input device, or command line options. The user must specify the serial number, 
 year of manufacture of the scythe in a file or in command line options. The time must be current.
