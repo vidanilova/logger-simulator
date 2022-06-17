@@ -108,6 +108,14 @@ The project ended up looking like this:
  * MIT license
  */
 
+/**
+ * @brief empty project
+ * @file main.cpp
+ * Copyright (c) 2022 @ikfia.ysn.ru
+ * Yu.G. Shafer Institute of Cosmophysical Research and Aeronomy of Siberian Branch of the Russian Academy of Sciences
+ * MIT license
+ */
+
 #include <iostream>
 #include <iomanip>
 #include <string>
