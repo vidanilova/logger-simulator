@@ -11,7 +11,7 @@
 https://github.com/commandus/logger-huffman 
 Максимум длина одного бинарного пакета - 24 байта для отправки в сети LoRaWAN.
 
-###Для чего надо
+### Для чего надо
 В network server https://github.com/commandus/lorawan-network-server есть утилита dev-payload, которой нужно будет передавать полученные пакеты в опции -x
 Остальные опции dev-payload:
  + -i, --identity= identity JSON file
