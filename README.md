@@ -1,361 +1,140 @@
 ﻿# Logger simulator
  
-## Description of the object
+## Описание объекта
 
-The logger passes the measurement time time, the serial number of the spit kosa (unique within a year), 
-the year it was manufactured kosa_year (since 2000), and the temperature in degrees Celsius temperature in an array. 
-The array size is 1..28. Accuracy up to 4 decimal places after the floating point.
-The thermometer bus voltages vcc and the battery voltage vbat are also transmitted.
-The LoggerBuilder class in the build() methods creates one or more binary packages.
-The LoggerBuilder class and other functions needed for it are in the liblogger-huffman.a 
-or logger-huffman.lib library for Windows in the https://github.com/commandus/logger-huffman project
-The maximum length of one binary packet is 24 bytes to be sent in the LoRaWAN network.
+Логгер передает время измерения time, серийный номер косы kosa (уникальный в течение года),  год ее изготовления kosa_year 
+(начиная с 2000 года) и температуру в градусах Цельсия temperature  в массиве. Размер массива 1..28. 
+Точность до 4 знака после плавающей запятой.
+Также передаются напряжения на шине термометров vcc и напряжение батареи vbat.
+Класс LoggerBuilder в методах build()создает один или несколько бинарных пакетов. 
+Класс LoggerBuilder и нужные для него другие функции лежат в библиотеке liblogger-huffman.a или logger-huffman.lib для Windows в проекте 
+https://github.com/commandus/logger-huffman 
+Максимум длина одного бинарного пакета - 24 байта для отправки в сети LoRaWAN.
 
-### What do you need
-The network server https://github.com/commandus/lorawan-network-server has a dev-payload utility that will need to pass received packets in
-the -x option
-
-Other dev-payload options: 
+###Для чего надо
+В network server https://github.com/commandus/lorawan-network-server есть утилита dev-payload, которой нужно будет передавать полученные пакеты в опции -x
+Остальные опции dev-payload:
  + -i, --identity= identity JSON file
  + -e, --eui= end-device identifier
  + -E, --devicename= end-device name
  + -a, --address=IP:port Send packet to network server. default port 5000
  + -j --json-only Suppress header (JSON only)
 
-needed to identify the LoRA device in the LoRaWAN network.
-The program you are developing must generate packets as hexadecimal strings to pass dev-payload.
-For testing, you can use the logger-huffman-print utility that comes with the library, 
-which prints the contents of a series of packets to the screen.
+нужны для идентификации LoRA устройства в LoRaWAN сети. 
+Разрабатываемая программа должна формировать пакеты в виде шестнадцатеричных строк для передачи dev-payload.
+Для тестирования можно использовать утилиту logger-huffman-print, прилагаемой к библиотеке, 
+которая распечатывает на экран содержимое серии пакетов.
+Требования к программе 
+Утилита командной строки для эмуляции данных с логгера температуры должна считать значения температуры в виде десятичных чисел с точкой 
+(или запятой) (например, 36.6) из файла, устройства ввода или из опций командной строки. Пользователь должен указать серийный номер, 
+год выпуска косы в файле или в опциях командной строки. Время должно указываться текущее.
+Примерно так:
 
-#### Program Requirements
-A command line utility to emulate data from a temperature logger must read temperature values ​​in dotted (or semicolon) decimal form 
-(for example, 36.6) from a file, input device, or command line options. The user must specify the serial number, 
-year of manufacture of the scythe in a file or in command line options. The time must be current.
-More or less like this:
-logger-simulate -type base -kosa 38 -year 19 -vcc 4.6 -vbat 1.5 2.3456 -3.1234 -5 6.1
-The result is a series of hexadecimal strings to stdout of the following form (each packet on a new line):
+logger-simulate –type base -time  2012-03-02T04:07:34 –kosa 38 –year 19 -vcc 4.6 –vbat 1.5 2.3456 -3.1234 -5 6.1 
+Результат - серия шестнадцатеричных строк в stdout следующего вида (каждый пакет с  новой строки):
 4801ab1232432456463573645
 4adaf1223234324
 
-There are three types of packages (base, diff, huffman).
+Есть три типа пакетов (base, diff, huffman).
 
-To parse command line options, you can use the argtable3 library, there are two files in total.
+Для разбора опций командной строки можно использовать библиотеку argtable3, там два файла всего.
+
+---
+#### Секция 1
+
+_Сначала устанавливаем Git Bash для эмуляции работы командной строки с официального сайта https://git-scm.com/downloads.
+Подбираем версию, подходящую под параметры вашего ПК. В моем случае установлена ​​64-битная версия._
 
 ---
 
-#### Section 1
+1. После скачивания устанавливаем эмулятор.
+2. Далее обязательно поставьте галочку, чтобы значок программы отображался на рабочем столе.
+3. Выберите элемент для кода Visual Studio.
+4. Щелкните все параметры для установки.
+5. Дожидаемся окончания установки. Установка прошла успешно.
+6. Открыли командную строку и ввели несколько кодов для активации связи с этим ПК.
 
-_First, we install Git Bash to emulate command line work from the official website https://git-scm.com/downloads.
-We select the version that suits the parameters of your PC. In my case, installed the 64-bit version._
-
----
-
-1. After downloading, we install the emulator.
-2. Next, be sure to check the box in order to show the program icon on the desktop.
-3. Select the item for Visual Studio Code.
-4. Click on all options to install.
-5. We wait until the installation is completed. The installation was successful.
-6. We opened a command line and entered several codes to activate the link with this PC.
-
-Next, go to the official GitHub website and create your account (specify your email and come up with any password).
-If the registration was successful, a green check mark will be displayed next to the data.
+Далее переходим на официальный сайт GitHub и создаем свою учетную запись (указываем электронную почту и придумываем любой пароль).
+Если регистрация прошла успешно, рядом с данными отобразится зеленая галочка.
 
 ---
 
-_Download from the official site https://cmake.org/download/.
-Then scroll down a little and again select exactly the version that you need._
+_Скачать с официального сайта https://cmake.org/download/.
+Затем прокрутите немного вниз и снова выберите именно ту версию, которая вам нужна._
 
-Download, then install step by step:
- 1. Select Repair, click next.
- 2. Install to the end and check the empty boxes. In my case, this program was already pre-installed.
- 3. After installation, go to the command line using the "Start" tab or press "Win + R" and enter cmd.
- 4. Troubleshooting.
- 5. Next, we entered several commands to link the account that was registered on the official website.
- 6.Then, without closing back, 
- we go into Git Bash and write the codes and our address so that the error notification does not show.
-
----
-
-Installing the Visual Studio IDE. Building the project library.
-Almost everything is ready, it remains only to create traffic. 
-*First To do this, 
-download Visual Studio from the official website https://visualstudio.microsoft.com/ or you can find any source.
-*Second. Next, select the option with C++. 
-*Third. Click on install and wait while the files are unpacked.
-*Fourth. After installation, run the program and do the following: 
-create a project, do not close the program and open the command line again and enter the following codes.
-*Fifth. If everything works flawlessly, 
-now let's go to our Git Bash and additionally write down 
-more codes for input  after that we will return back to Virtual Studio and right-click on "Build".
-*Lastly. The assembly was successful. 
-*Library collected.
+Загрузите, затем установите шаг за шагом:
+ 1. Выберите «Восстановить», нажмите «Далее».
+ 2. Устанавливаем до конца и отмечаем пустые галочки. В моем случае эта программа уже была предустановлена.
+ 3. После установки заходим в командную строку через вкладку "Пуск" или жмем "Win+R" и вводим cmd.
+ 4. Устранение неполадок.
+ 5. Далее мы ввели несколько команд для привязки учетной записи, которая была зарегистрирована на официальном сайте.
+ 6.Затем, не закрывая назад,
+ заходим в Git Bash и пишем коды и наш адрес, чтобы уведомление об ошибке не показывалось.
 
 ---
 
-##### Section 2
-
-So, for starters, 
-we download an additional program from the official website https://www.farmanager.com/download.php?l=ru. 
-Far Manager is a utility that can copy your data and transfer it inside the Visual Studio drive. 
-Next, select any file format that suits you according to the parameters of this PC.
-After downloading, run the installation file and click on "Next".
-After the full installation, 
-we launch Far Manager and go to the first window and select the User folder 
-(thus, we go to the internal data of our computer and its user).
-Let's copy our given project using the command.
-
-We write after the specified project "git clone https://github.com/commandus/empty-project.git" in the src folder. 
-Click on "Shift + O" and check if it works without errors.
-After that, we launch Visual Studio, and again click "Build" on the project (which was copied).
-Let's check if everything works.
-
---- 
-
-***Removing the hidden src/empty-project/.git folder is an action that removes the link to the github repository 
-(after the initial project setup, it will be linked to the second new github project, not the empty template).***
-To do this, go to the Visual Studio debug console and delete the first project, after deleting it will still remain.
-Open it in notepad. We supplement.
+Установка интегрированной среды разработки Visual Studio. Создание библиотеки проекта.
+Почти все готово, осталось только создать трафик.
+*Сначала для этого
+скачать Visual Studio с официального сайта https://visualstudio.microsoft.com/ или найти любой источник.
+*Второй. Далее выберите вариант с C++.
+*В третьих. Нажмите «Установить» и подождите, пока файлы распакуются.
+*Четвертый. После установки запустите программу и выполните следующие действия:
+создайте проект, не закрывайте программу и снова откройте командную строку и введите следующие коды.
+* Пятый. Если все работает безупречно,
+теперь зайдем в наш Git Bash и дополнительно запишем
+больше кодов для ввода после этого вернемся обратно в Virtual Studio и нажмем правой кнопкой мыши на "Build".
+* Наконец. Сборка прошла успешно.
+*Библиотека собрана.
 
 ---
 
-***Create a build folder and generate a VS solution: cd src/empty-project; mkdir build; cd build; cmake ..***
-1. First, we add the included files to the project: #include <string>, <vector> and using namespace std.
-2. Copy the path and paste static const std::string programName = "empty-project"; 
+##### Раздел 2
+
+Итак, для начала,
+скачиваем дополнительную программу с официального сайта https://www.farmanager.com/download.php?l=ru.
+Far Manager — это утилита, которая может копировать ваши данные и передавать их на диск Visual Studio.
+Далее выберите любой формат файла, подходящий вам по параметрам данного ПК.
+После загрузки запустите установочный файл и нажмите «Далее».
+После полной установки
+запускаем Far Manager и переходим в первое окно и выбираем папку User
+(таким образом, мы переходим к внутренним данным нашего компьютера и его пользователя).
+Скопируем наш данный проект с помощью команды.
+
+Пишем после указанного проекта "git clone https://github.com/commandus/empty-project.git" в папке src.
+Нажмите на «Shift+O» и проверьте, работает ли он без ошибок.
+После этого запускаем Visual Studio, и снова нажимаем "Build" на проекте (который скопировали).
+Проверим, все ли работает.
+
+---
+
+***Удаление скрытой папки src/empty-project/.git — это действие, которое удаляет ссылку на репозиторий github.
+(после первоначальной настройки проекта он будет связан со вторым новым проектом github, а не с пустым шаблоном).***
+Для этого заходим в консоль отладки Visual Studio и удаляем первый проект, после удаления он все равно останется.
+Откройте его в блокноте. Дополняем.
+
+---
+
+*** Создайте папку сборки и сгенерируйте решение VS: cd src/empty-project; сборка mkdir; сборка компакт-диска; сделай ..***
+1. Сначала добавляем в проект включаемые файлы: #include <string>, <vector> и с использованием пространства имен std.
+2. Скопируйте путь и вставьте static const std::string programName = "empty-project";
 std::string bin2hexString(const std::string& value);
-3. We write device parameters like: temperature, battery heating, date, etc.
+3. Пишем параметры устройства типа: температура, нагрев батареи, дата и т.д.
 
 --
 
-*Register for Live Share.*
-1.We come into the Visual Studio, and we are registered on Live Share.
-2. After clicking the button, you will have two ways: the first is to log in with a Windows account, 
-the second is to log in with a GitHub account, 
-in my case I went through the second method. Now you can share your project or work together.
-3. Next, we create a class and several integers.
-4. Fixed a few more settings.
-5. We put a timer in the project, first we right-click on empty-project> Properties> Debugging> Command Arguments 
-and write *--time 2012-03-02T04:07:34 12.0 13.1 14.2*
-6. We clean up the excess and bring the project in order.
-7. Fixed internal parameters and added some more device data.
-8. We transfer the project file through Far Manager: 
+*Зарегистрируйтесь для участия в Live Share.*
+1. Заходим в Visual Studio, и регистрируемся на Live Share.
+2. После нажатия кнопки у вас будет два пути: первый — войти под учетной записью Windows,
+второй — войти в систему с учетной записью GitHub,
+в моем случае я пошел по второму методу. Теперь вы можете поделиться своим проектом или работать вместе.
+3. Далее мы создаем класс и несколько целых чисел.
+4. Исправлено еще несколько настроек.
+5. Ставим таймер в проект, сначала правый клик по пустому проекту > Свойства > Отладка > Аргументы команды
+и пишем *--time 2012-03-02T04:07:34 12.0 13.1 14.2*
+6. Убираем лишнее и приводим проект в порядок.
+7. Исправлены внутренние параметры и добавлены дополнительные данные устройства.
+8. Переносим файл проекта через Far Manager:
  _git add README. md_
  _git commit -m "first commit"_
  _git push -u origin main_
-
-The project ended up looking like this:
-
-```/**
- * @brief empty project
- * @file main.cpp
- * Copyright (c) 2022 @ikfia.ysn.ru
- * Yu.G. Shafer Institute of Cosmophysical Research and Aeronomy of Siberian Branch of the Russian Academy of Sciences
- * MIT license
- */
-
-#include <iostream>
-#include <iomanip>
-#include <string>
-#include <cstdlib>
-#include <vector>
-#include "logger-huffman/logger-builder.h"
-#include "strptime.h"
-#include "string.h"
-#include "argtable3/argtable3.h"
-#include <time.h>
-#include <cstdio>
-using namespace std;
-
-const static char *dateformat0 = "%FT%T";
-const static char* dateformat1 = "%Y-%m-%dT%H:%M:%S";
-/*time_t time(time_t* ttime) */
-/**
- * Parse NULL-terminated timstamp string
- * @return  Unix epoch time (seconds) or 2015-11-25T23:59:11
- */
-
-static time_t string2time(
-	const char *v,
-	bool isLocaltime
-)
-{
-	struct tm tmd;
-	memset(&tmd, 0, sizeof(struct tm));
-
-	time_t r=0;
-	if ((strptime(v, dateformat0, &tmd) == NULL)
-		&& (strptime(v, dateformat1, &tmd) == NULL)) 
-	{
-        r = strtol(v, NULL, 0);
-	}
-	return r;
-}
-
-static time_t string2time2(
-	const char *v,
-	bool isLocaltime
-)
-{
-	struct tm tmd;
-	memset(&tmd, 0, sizeof(struct tm));
-}
-
-
-class EmulatorConfig {
-    public:
-        int kosa; 
-        int kosayear;
-        int measure;
-        time_t time;
-        int vcc;
-        int vbat;
-        EmulatorConfig() 
-            : kosa(0), kosayear(0), measure(0), time(0), vcc(0.0), vbat(0.0)
-        {
-            
-        };
-};
-
-static const std::string programName = "empty-project";
-std::string bin2hexString (const std::string& value);
-/**
- * Parse command line
- * Return 0- success
- *        1- show help and exit, or command syntax error
- *        2- output file does not exists or can not open to write
- **/
-static int parseCmd(
-    EmulatorConfig *config,
-    std::vector<double> &t,
-    int &verbosity,
-    int argc, 
-    char *argv[])
-{
-    struct arg_int* a_kosa = arg_int1("k", "kosa", "<number>", "plume serial number"); 
-    struct arg_int* a_kosayear = arg_int1("y", "kosa year", "<date of origin: 08.06.2022>", "year");
-
-    struct arg_str* a_t = arg_strn(nullptr, nullptr, "<temperature>", 1, 28, "Temperature, degrees C");
-    struct arg_int* a_vbat = arg_int0("b", "vbat", "<voltage:high>", "Battery voltage, V");
-    struct arg_int* a_vcc = arg_int0("c", "vcc", "<voltage>", "Bus voltage, V");
-    struct arg_str* a_time = arg_str0("t", "time", "<YYYY-MM-DDThh:mm:ss>", "measurement time");
-    struct arg_int* a_measure = arg_int0("m", "measure", "width", "thickness");
-    struct arg_lit *a_verbosity = arg_litn("v", "verbose", 0, 3, "Set verbosity level");
-    struct arg_lit *a_help = arg_lit0("?", "help", "Show this help");
-    struct arg_end *a_end = arg_end(20);
-
-    void* argtable[] = {
-        a_kosa,
-        a_kosayear,
-        a_t,
-        a_vbat,
-        a_vcc,
-        a_time,
-        a_measure,
-        a_verbosity, a_help, a_end
-    };
-
-    // verify the argtable[] entries were allocated successfully
-    if (arg_nullcheck(argtable) != 0) {
-        arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
-        return 1;
-    }
-    // Parse the command line as defined by argtable[]
-    int nerrors = arg_parse(argc, argv, argtable);
-
-    if ((nerrors == 0) && (a_help->count == 0)) {
-        if (a_kosa->count)
-            config->kosa = *a_kosa-> ival;
-        if (a_kosayear->count)
-            config->kosayear = *a_kosayear-> ival;
-        if (a_measure->count)
-            config->measure = *a_measure->ival;
-        verbosity =  a_verbosity -> count;
-        // parse date time
-        // config->time = *a_time->sval;
-        if (a_time->count)
-            config->time = string2time(*a_time->sval, true);
-        if (a_vcc->count)
-            config->vcc = *a_vcc->ival;
-        if (a_vbat->count)
-            config->vbat = *a_vbat->ival;
-        for (int i = 0; i < a_t->count; i++) {
-            std::string sT = a_t->sval[i];
-            size_t p = sT.find('.');
-            if (p != std::string::npos)
-                sT[p] = '.';
-            double d = strtod(sT.c_str(), nullptr);
-            t.push_back(d);
-        }
-    }
-
-    // special case: '--help' takes precedence over error reporting
-    if ((a_help->count) || nerrors) {
-        if (nerrors)
-            arg_print_errors(stderr, a_end, programName.c_str());
-        std::cerr << "Usage: " << programName << std::endl;
-        arg_print_syntax(stderr, argtable, "\n");
-        std::cerr
-            << "Empty project" << std::endl
-            << "  empty-project" << std::endl;
-
-        arg_print_glossary(stderr, argtable, "  %-25s %s\n");
-        arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
-
-        return -1;
-    }
-
-    arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
-    return 0;
-}
-
-int main(int argc, char** argv)
-
-{
-    // read command line args
-    EmulatorConfig config;
-    std::vector<double> t;
-    int verbosity;
-    parseCmd(&config, t, verbosity, argc, argv);
-    // set measurement
-    LoggerMeasurements m;
-    m.time = config.time;
-    m.kosa = config.kosa;
-    m.kosa_year = config.kosayear;
-    m.measure = config.measure;
-    m.time = config.time;
-    m.vcc = config.vcc;
-    m.vbat = config.vbat;
-    
-    if (verbosity > 2) {
-        std::string ct = " temperature, degrees C ";
-        std::string ctime = " time ";
-        std::string ckosa = " plume serial number ";            
-        std::string ckosayear = " production year ";   
-        std::string cmeasure = " measure # ";
-        std::string cvcc = " Bus voltage, V ";                                          
-        std::string cvbat = " Battery voltage, V ";
-        
-        std::cout << ctime << m.time << endl;
-        std::cout << ckosa <<(int) m.kosa << endl;
-        std::cout << ckosayear << (int) m.kosa_year << endl;
-        std::cout << cmeasure << m.measure << endl;
-        std::cout << cvcc << std::fixed << std::setprecision(1) << m.vcc << endl;
-        std::cout << cvbat << std::fixed << std::setprecision(1) << m.vbat << endl;
-
-        for (std::vector<double>::iterator it(t.begin()); it != t.end(); it++) {
-            std::cout << std::fixed << std::setprecision(4) << *it << " ";
-        }
-        std::cout << std::endl;
-    }
-   
-    
-    // build packet(s)
-    LoggerBuilder b;
-    std::vector<std::string> r;
-    b.build(r, m, t);
-
-    // print packets
-    for (auto& a : r)
-    {
-        cout << bin2hexString(a) << " " << endl;
-    }
-}```
