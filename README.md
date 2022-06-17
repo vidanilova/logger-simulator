@@ -15,12 +15,12 @@ The maximum length of one binary packet is 24 bytes to be sent in the LoRaWAN ne
 The network server https://github.com/commandus/lorawan-network-server has a dev-payload utility that will need to pass received packets in
 the -x option
 
-Other dev-payload options:
--i, --identity= identity JSON file
--e, --eui= end-device identifier
--E, --devicename= end-device name.
--a, --address=IP:port Send packet to network server. default port 5000
--j --json-only Suppress header (JSON only)
+Other dev-payload options: 
+ -i, --identity= identity JSON file
+ -e, --eui= end-device identifier
+ -E, --devicename= end-device name.
+ -a, --address=IP:port Send packet to network server. default port 5000
+ -j --json-only Suppress header (JSON only)
 
 needed to identify the LoRA device in the LoRaWAN network.
 The program you are developing must generate packets as hexadecimal strings to pass dev-payload.
