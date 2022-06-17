@@ -68,14 +68,14 @@ Let's check if everything works.
 
 --- 
 
-~~*Removing the hidden src/empty-project/.git folder is an action that removes the link to the github repository 
-(after the initial project setup, it will be linked to the second new github project, not the empty template).*~~
+***Removing the hidden src/empty-project/.git folder is an action that removes the link to the github repository 
+(after the initial project setup, it will be linked to the second new github project, not the empty template).***
 To do this, go to the Visual Studio debug console and delete the first project, after deleting it will still remain.
 Open it in notepad. We supplement.
 
 ---
 
-~~*Create a build folder and generate a VS solution: cd src/empty-project; mkdir build; cd build; cmake ..*~~
+***Create a build folder and generate a VS solution: cd src/empty-project; mkdir build; cd build; cmake ..***
 1. First, we add the included files to the project: #include <string>, <vector> and using namespace std.
 2. Copy the path and paste static const std::string programName = "empty-project"; 
 std::string bin2hexString(const std::string& value);
@@ -100,15 +100,8 @@ and write *--time 2012-03-02T04:07:34 12.0 13.1 14.2*
  _git push -u origin main_
 
 The project ended up looking like this:
-/**
- * @brief empty project
- * @file main.cpp
- * Copyright (c) 2022 @ikfia.ysn.ru
- * Yu.G. Shafer Institute of Cosmophysical Research and Aeronomy of Siberian Branch of the Russian Academy of Sciences
- * MIT license
- */
 
-/**
+```/**
  * @brief empty project
  * @file main.cpp
  * Copyright (c) 2022 @ikfia.ysn.ru
@@ -322,4 +315,4 @@ int main(int argc, char** argv)
     {
         cout << bin2hexString(a) << " " << endl;
     }
-}
+}```
