@@ -16,8 +16,6 @@
 #include "string.h"
 #include "argtable3/argtable3.h"
 #include <time.h>
-#include <stdio.h>
-#include <locale.h>
 #include <cstdio>
 using namespace std;
 
@@ -30,7 +28,7 @@ const static char* dateformat1 = "%Y-%m-%dT%H:%M:%S";
  */
 
 static time_t string2time(
-	const char *v,
+    const char* v,
 	bool isLocaltime
 )
 {
@@ -55,17 +53,17 @@ static time_t string2time2(
 	memset(&tmd, 0, sizeof(struct tm));
 }
 
-
 class EmulatorConfig {
     public:
         int kosa; 
         int kosayear;
         int measure;
         time_t time;
-        int vcc;
-        int vbat;
+        double vcc;
+        double vbat;
+        int typ;
         EmulatorConfig() 
-            : kosa(0), kosayear(0), measure(0), time(0), vcc(0.0), vbat(0.0)
+            : kosa(0), kosayear(0), measure(0), time(0), typ(0), vcc(0.0), vbat(0.0)
         {
             
         };
@@ -81,22 +79,24 @@ std::string bin2hexString (const std::string& value);
  **/
 static int parseCmd(
     EmulatorConfig *config,
-    std::vector<double> &t,
+    std::vector<double> &t, 
+    int &typ,
     int &verbosity,
     int argc, 
     char *argv[])
 {
     struct arg_int* a_kosa = arg_int1("k", "kosa", "<number>", "plume serial number"); 
     struct arg_int* a_kosayear = arg_int1("y", "kosa year", "<date of origin: 08.06.2022>", "year");
-
     struct arg_str* a_t = arg_strn(nullptr, nullptr, "<temperature>", 1, 28, "Temperature, degrees C");
     struct arg_int* a_vbat = arg_int0("b", "vbat", "<voltage:high>", "Battery voltage, V");
     struct arg_int* a_vcc = arg_int0("c", "vcc", "<voltage>", "Bus voltage, V");
     struct arg_str* a_time = arg_str0("t", "time", "<YYYY-MM-DDThh:mm:ss>", "measurement time");
     struct arg_int* a_measure = arg_int0("m", "measure", "width", "thickness");
     struct arg_lit *a_verbosity = arg_litn("v", "verbose", 0, 3, "Set verbosity level");
+    struct arg_str* a_typ = arg_str0("t", "type", "<base|diff|huffman>", "open");
     struct arg_lit *a_help = arg_lit0("?", "help", "Show this help");
-    struct arg_end *a_end = arg_end(20);
+    struct arg_end* a_end = arg_end(20);
+    
 
     void* argtable[] = {
         a_kosa,
@@ -106,6 +106,7 @@ static int parseCmd(
         a_vcc,
         a_time,
         a_measure,
+        a_typ,
         a_verbosity, a_help, a_end
     };
 
@@ -131,11 +132,19 @@ static int parseCmd(
             config->time = string2time(*a_time->sval, true);
         if (a_vcc->count)
             config->vcc = *a_vcc->ival;
-        if (a_vbat->count)
-            config->vbat = *a_vbat->ival;
+        if (a_vbat -> count)
+            config -> vbat = *a_vbat -> ival;
+        if (a_typ->count) {
+            std::string sTyp = *a_typ->sval;
+            if (sTyp == "diff")
+                typ = 1;
+            else if (sTyp == "huff")
+                typ = 2;
+            else typ = 0;
+        }
         for (int i = 0; i < a_t->count; i++) {
             std::string sT = a_t->sval[i];
-            size_t p = sT.find('.');
+            size_t p = sT.find(',');
             if (p != std::string::npos)
                 sT[p] = '.';
             double d = strtod(sT.c_str(), nullptr);
@@ -168,11 +177,12 @@ int main(int argc, char** argv)
 {
     // read command line args
     EmulatorConfig config;
-    std::vector<double> t;
+    std::vector<double> t0;
     int verbosity;
-    parseCmd(&config, t, verbosity, argc, argv);
+    int typ;
     // set measurement
     LoggerMeasurements m;
+    parseCmd(&config, m.temperature, typ, verbosity, argc, argv);
     m.time = config.time;
     m.kosa = config.kosa;
     m.kosa_year = config.kosayear;
@@ -180,35 +190,59 @@ int main(int argc, char** argv)
     m.time = config.time;
     m.vcc = config.vcc;
     m.vbat = config.vbat;
-    
+
     if (verbosity > 2) {
-        std::string ct = " temperature, degrees C ";
-        std::string ctime = " time ";
-        std::string ckosa = " plume serial number ";            
-        std::string ckosayear = " production year ";   
-        std::string cmeasure = " measure # ";
-        std::string cvcc = " Bus voltage, V ";                                          
+        std::string ct = " Temperature, degrees C ";
+        std::string ctime = " Time ";
+        std::string ckosa = " Plume serial number ";
+        std::string ckosayear = " Production year ";
+        std::string cmeasure = " Measure # ";
+        std::string cvcc = " Bus voltage, V ";
         std::string cvbat = " Battery voltage, V ";
-        
+
+
         std::cout << ctime << m.time << endl;
-        std::cout << ckosa <<(int) m.kosa << endl;
-        std::cout << ckosayear << (int) m.kosa_year << endl;
+        std::cout << ckosa << (int)m.kosa << endl;
+        std::cout << ckosayear << (int)m.kosa_year << endl;
         std::cout << cmeasure << m.measure << endl;
         std::cout << cvcc << std::fixed << std::setprecision(1) << m.vcc << endl;
         std::cout << cvbat << std::fixed << std::setprecision(1) << m.vbat << endl;
 
-        for (std::vector<double>::iterator it(t.begin()); it != t.end(); it++) {
+        for (std::vector <double> ::iterator it(m.temperature.begin()); it != m.temperature.end(); it++) {
             std::cout << std::fixed << std::setprecision(4) << *it << " ";
         }
         std::cout << std::endl;
     }
-   
-    
+
     // build packet(s)
     LoggerBuilder b;
     std::vector<std::string> r;
-    b.build(r, m, t);
 
+
+    for (auto it(m.temperature.begin());
+        it != m.temperature.end();
+    it++)
+    {
+        t0.push_back(0.0);
+
+    }
+    switch (typ){
+    case 1:
+    {
+        b.build(r, m, t0);
+        break;
+    }
+
+    case 2:  
+    {
+         b.build(r, m, t0);
+        break;
+    }
+    default: 
+    {
+        b.build(r, m, t0);
+    }
+    }
     // print packets
     for (auto& a : r)
     {
